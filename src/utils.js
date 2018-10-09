@@ -59,20 +59,7 @@ export const data = {
     name: "Заказчик",
     type: "checkbox"
   },
-  sizes: {
-    data: [
-      {
-        width: 2000,
-        height: 2500
-      },
-      {
-        width: 2300,
-        height: 1500
-      }
-    ],
-    name: "Размер фото",
-    type: "radio"
-  },
+
   media_type: {
     data: [
       {

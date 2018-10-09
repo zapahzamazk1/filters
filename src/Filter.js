@@ -4,38 +4,68 @@ import { toArray } from "./utils";
 
 export default class Filter extends Component {
   state = {
-    isOpen: true,
-    checkedItems: new Map()
+    popupVisible: false
   };
+
   render() {
-    const { isOpen } = this.state;
-    return <div>{isOpen && <div>{this.getCheck()}</div>}</div>;
+    const { popupVisible } = this.state;
+    const { name } = this.props;
+    return (
+      <div>
+        <span onClick={this.handleClick}>
+          {name}
+          {popupVisible && (
+            <div
+              style={{
+                zIndex: "20",
+                width: "200px",
+                height: "200px",
+                position: "absolute"
+              }}
+            >
+              {this.getCheck()}
+            </div>
+          )}
+        </span>
+      </div>
+    );
   }
 
-  handleChange = e => {
-    const item = e.target.value;
-    const isChecked = e.target.checked;
-
-    this.setState(prevState => ({
-      checkedItems: prevState.checkedItems.set(item, isChecked)
-    }));
-  };
-
   getCheck = () => {
-    const { list, name } = this.props;
+    const { list, name, onChange, checked } = this.props;
     const { data } = list;
-    console.log(list);
     return data.map(item => (
       <label key={Math.random()}>
-        {item.name ? item.name : `${item.width}x${item.height}`}
+        {item.name}
         <Check
           type={list.type}
-          name={item.name}
-          value={item.id ? item.id : { width: item.width, height: item.height }}
-          checked={this.state.checkedItems.get(item.name)}
-          onChange={this.handleChange}
+          name={name}
+          value={item.id}
+          checked={checked.includes(item.id + "")}
+          onChange={onChange}
         />
       </label>
     ));
+  };
+  handleClick = () => {
+    if (!this.state.popupVisible) {
+      // attach/remove event handler
+      document.addEventListener("click", this.handleOutsideClick, false);
+    } else {
+      document.removeEventListener("click", this.handleOutsideClick, false);
+    }
+
+    this.setState(prevState => ({
+      popupVisible: !prevState.popupVisible
+    }));
+  };
+
+  handleOutsideClick = e => {
+    // ignore clicks on the component itself
+    if (this.node.contains(e.target)) {
+      return;
+    }
+
+    this.handleClick();
   };
 }
